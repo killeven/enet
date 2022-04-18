@@ -2,6 +2,8 @@ package enet
 
 // #include <enet/enet.h>
 import "C"
+import "unsafe"
+import "reflect"
 
 // Peer is a peer which data packets may be sent or received from
 type Peer interface {
@@ -14,10 +16,21 @@ type Peer interface {
 	SendBytes(data []byte, channel uint8, flags PacketFlags) error
 	SendString(str string, channel uint8, flags PacketFlags) error
 	SendPacket(packet Packet, channel uint8) error
+
+	GetData() unsafe.Pointer
+	SetData(v interface{})
 }
 
 type enetPeer struct {
 	cPeer *C.struct__ENetPeer
+}
+
+func (peer enetPeer) GetData() unsafe.Pointer {
+	return peer.cPeer.data
+}
+
+func (peer enetPeer) SetData(v interface{}) {
+	peer.cPeer.data = unsafe.Pointer(reflect.ValueOf(v).Pointer())
 }
 
 func (peer enetPeer) GetAddress() Address {
