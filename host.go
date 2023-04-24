@@ -68,6 +68,7 @@ func NewHost(addr Address, peerCount, channelLimit uint64, incomingBandwidth, ou
 		return nil, errors.New("unable to create host")
 	}
 
+	host.mtu = C.enet_uint32(1024)
 	return &enetHost{
 		cHost: host,
 	}, nil
